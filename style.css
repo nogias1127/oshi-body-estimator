@@ -1154,3 +1154,18 @@ td {
     min-width: 0;
   }
 }
+
+@media (max-width: 700px) {
+  .side-panel {
+    order: 2;
+  }
+
+  .main-panel {
+    order: 1;
+  }
+
+  .tool-layout {
+    display: flex;
+    flex-direction: column;
+  }
+}

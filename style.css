@@ -920,25 +920,34 @@ td {
 @media (max-width: 480px) {
   .field-label-row {
     position: relative;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .help-tip {
+    position: static;
   }
 
   .help-text {
-    left: auto;
-    right: 0;
-    bottom: calc(100% + 8px);
+    left: 0;
+    right: auto;
+    top: calc(100% + 6px);
+    bottom: auto;
     transform: none;
-    width: max-content;
-    max-width: min(260px, calc(100vw - 48px));
+    width: 100%;
+    max-width: none;
+    padding: 8px 10px;
+    border-radius: var(--radius-sm);
+    font-size: 12px;
+    line-height: 1.6;
+  }
+
+  .help-text::after {
+    display: none;
   }
 
   .help-tip:hover .help-text,
   .help-tip:focus-within .help-text {
-    transform: translateY(-2px);
-  }
-
-  .help-text::after {
-    left: auto;
-    right: 6px;
     transform: none;
   }
 }

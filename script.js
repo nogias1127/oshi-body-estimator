@@ -1,5 +1,47 @@
 const $ = (id) => document.getElementById(id);
 
+const frameProfiles = {
+  adultMale: {
+    label: "成人男性寄り",
+    bmi: 1.0,
+    shoulder: 1.0,
+    chest: 1.0,
+    waist: 1.0,
+    hip: 1.0,
+    neck: 1.0,
+    limb: 1.0,
+    hand: 1.0,
+    foot: 1.0,
+    comment: "成人男性らしい肩幅・胸囲・手足の存在感が出やすい比率です。"
+  },
+  neutralMale: {
+    label: "中性的男性",
+    bmi: 0.96,
+    shoulder: 0.96,
+    chest: 0.96,
+    waist: 0.97,
+    hip: 0.98,
+    neck: 0.94,
+    limb: 0.95,
+    hand: 0.97,
+    foot: 0.98,
+    comment: "肩幅や首周りはやや控えめで、線の細さや中性的なすっきり感が出やすい比率です。"
+  },
+  boyishMale: {
+    label: "少年寄り男性",
+    bmi: 0.92,
+    shoulder: 0.93,
+    chest: 0.93,
+    waist: 0.95,
+    hip: 0.96,
+    neck: 0.90,
+    limb: 0.91,
+    hand: 0.94,
+    foot: 0.96,
+    comment: "全体的に細く軽めで、成長途中・少年寄りの体格に近い印象になります。"
+  }
+};
+
 const bodyProfiles = {
   slender: {
     label: "華奢",
@@ -120,51 +162,66 @@ function sanitizeFileName(name) {
     .slice(0, 80) || "あの人";
 }
 
+function getSelectedValue(id, fallback) {
+  const element = $(id);
+  return element ? element.value : fallback;
+}
+
+function setValueIfExists(id, value) {
+  const element = $(id);
+  if (element) {
+    element.value = value;
+  }
+}
+
 function estimate() {
   const name = $("oshiName").value.trim() || "あの人";
   const height = Number($("height").value);
-  const bodyType = $("bodyType").value;
-  const headRatio = Number($("headRatio").value);
-  const handType = $("handType").value;
-  const legType = $("legType").value;
+
+  const frameType = getSelectedValue("frameType", "adultMale");
+  const bodyType = getSelectedValue("bodyType", "standard");
+  const headRatio = Number(getSelectedValue("headRatio", "7.5"));
+  const handType = getSelectedValue("handType", "normal");
+  const legType = getSelectedValue("legType", "normal");
 
   if (!height || height < 100 || height > 250) {
     alert("推しの身長を100〜250cmの範囲で入力してください。");
     return;
   }
 
-  const body = bodyProfiles[bodyType];
-  const hand = handProfiles[handType];
-  const leg = legProfiles[legType];
+  const frame = frameProfiles[frameType] || frameProfiles.adultMale;
+  const body = bodyProfiles[bodyType] || bodyProfiles.standard;
+  const hand = handProfiles[handType] || handProfiles.normal;
+  const leg = legProfiles[legType] || legProfiles.normal;
 
   const heightM = height / 100;
-  const minWeight = body.bmi[0] * heightM * heightM;
-  const maxWeight = body.bmi[1] * heightM * heightM;
+  const minWeight = body.bmi[0] * frame.bmi * heightM * heightM;
+  const maxWeight = body.bmi[1] * frame.bmi * heightM * heightM;
 
   const headHeight = height / headRatio;
 
-  const shoulder = height * 0.245 * body.shoulder;
-  const chest = height * 0.52 * body.chest;
-  const waist = height * 0.43 * body.waist;
-  const hip = height * 0.50 * body.hip;
-  const neck = height * 0.215 * body.neck;
+  const shoulder = height * 0.245 * frame.shoulder * body.shoulder;
+  const chest = height * 0.52 * frame.chest * body.chest;
+  const waist = height * 0.43 * frame.waist * body.waist;
+  const hip = height * 0.50 * frame.hip * body.hip;
+  const neck = height * 0.215 * frame.neck * body.neck;
 
   const inseamBase = 0.455 + leg.factor + ((headRatio - 7.5) * 0.006);
   const inseam = height * inseamBase;
   const torso = height - inseam - headHeight * 0.55;
 
-  const arm = height * 0.32;
-  const sleeve = height * 0.45;
-  const upperArm = height * 0.158 * body.limb;
-  const wrist = height * 0.088 * body.limb;
-  const thigh = height * 0.295 * body.limb;
-  const calf = height * 0.205 * body.limb;
+  const arm = height * 0.32 * frame.limb;
+  const sleeve = height * 0.45 * frame.limb;
+  const upperArm = height * 0.158 * frame.limb * body.limb;
+  const wrist = height * 0.088 * frame.limb * body.limb;
+  const thigh = height * 0.295 * frame.limb * body.limb;
+  const calf = height * 0.205 * frame.limb * body.limb;
 
-  const handLength = height * 0.108 * hand.factor;
+  const handLength = height * 0.108 * frame.hand * hand.factor;
   const handWidth = handLength * 0.48;
   const middleFinger = handLength * (handType === "long" ? 0.465 : 0.435);
 
-  const footLength = height * 0.151;
+  const footLength = height * 0.151 * frame.foot;
   const shoeSize = footLength + 1.0;
   const footWidth = footLength * 0.39;
 
@@ -174,6 +231,8 @@ function estimate() {
   const ringMax = ringSize + 1.5;
 
   const basicRows = [
+    ["身体ベース", frame.label],
+    ["体格タイプ", body.label],
     ["身長", `${round(height)}cm`],
     ["推定体重", rangeText(minWeight, maxWeight, "kg")],
     ["頭の高さ", `${round(headHeight)}cm`],
@@ -205,6 +264,7 @@ function estimate() {
   const memos = createMemos({
     name,
     height,
+    frame,
     body,
     hand,
     leg,
@@ -229,7 +289,7 @@ function estimate() {
   });
 
   $("resultTitle").textContent = `${name}の推定身体情報`;
-  $("summaryText").textContent = createSummary(name, body, hand, leg, height, shoulder, handLength);
+  $("summaryText").textContent = createSummary(name, frame, body, hand, leg, height, shoulder, handLength);
 
   renderTable($("basicTable"), basicRows);
   renderTable($("detailTable"), detailRows);
@@ -245,7 +305,7 @@ function estimate() {
   $("resultSection").scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
-function createSummary(name, body, hand, leg, height, shoulder, handLength) {
+function createSummary(name, frame, body, hand, leg, height, shoulder, handLength) {
   const shoulderImpression =
     shoulder / height > 0.25
       ? "肩幅に少し存在感があり"
@@ -253,13 +313,14 @@ function createSummary(name, body, hand, leg, height, shoulder, handLength) {
         ? "肩まわりはすっきりしていて"
         : "肩幅は自然で";
 
-  return `${name}は、${body.label}寄りの${round(height)}cm想定です。${shoulderImpression}、${body.comment}${hand.comment}${leg.comment} 手の長さは約${round(handLength)}cmで、触れた時のサイズ感を想像しやすい推定になっています。`;
+  return `${name}は、${frame.label}ベースの${body.label}寄り、${round(height)}cm想定です。${shoulderImpression}、${frame.comment}${body.comment}${hand.comment}${leg.comment} 手の長さは約${round(handLength)}cmで、触れた時のサイズ感を想像しやすい推定になっています。`;
 }
 
 function createMemos(data) {
   const memos = [];
 
-  memos.push(`${data.name}の体格は「${data.body.label}」寄り。${data.body.comment}`);
+  memos.push(`身体ベースは「${data.frame.label}」。${data.frame.comment}`);
+  memos.push(`体格タイプは「${data.body.label}」。${data.body.comment}`);
   memos.push(`手の印象は「${data.hand.label}」。手長は約${round(data.handLength)}cmで、手を重ねる描写や恋人繋ぎのサイズ感の目安になります。`);
   memos.push(`脚の印象は「${data.leg.label}」。股下は約${round(data.inseam)}cmで、立ち姿や歩幅のイメージ作りに使えます。`);
 
@@ -477,10 +538,13 @@ async function saveResultAsPng() {
 function resetForm() {
   $("oshiName").value = "";
   $("height").value = "";
-  $("bodyType").value = "standard";
-  $("headRatio").value = "7.5";
-  $("handType").value = "normal";
-  $("legType").value = "normal";
+
+  setValueIfExists("frameType", "adultMale");
+  setValueIfExists("bodyType", "standard");
+  setValueIfExists("headRatio", "7.5");
+  setValueIfExists("handType", "normal");
+  setValueIfExists("legType", "normal");
+
   $("userHeight").value = "";
   $("userHand").value = "";
   $("userShoe").value = "";

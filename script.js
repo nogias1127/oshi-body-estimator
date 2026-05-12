@@ -373,3 +373,44 @@ function escapeHtml(value) {
 $("estimateButton").addEventListener("click", estimate);
 $("resetButton").addEventListener("click", resetForm);
 $("copyButton").addEventListener("click", copyResult);
+
+async function saveResultAsPng() {
+  const resultSection = $("resultSection");
+
+  if (resultSection.classList.contains("hidden")) {
+    alert("先に「推定する」を押して結果を表示してください。");
+    return;
+  }
+
+  const button = $("savePngButton");
+  const originalText = button.textContent;
+
+  try {
+    button.textContent = "生成中...";
+    button.disabled = true;
+
+    const canvas = await html2canvas(resultSection, {
+      backgroundColor: "#f7f2ee",
+      scale: 2,
+      useCORS: true,
+      logging: false,
+      ignoreElements: (element) => {
+        return element.hasAttribute("data-html2canvas-ignore");
+      }
+    });
+
+    const name = ($("oshiName").value.trim() || "あの人").replace(/[\\/:*?"<>|]/g, "_");
+    const fileName = `${name}_推定身体情報.png`;
+
+    const link = document.createElement("a");
+    link.href = canvas.toDataURL("image/png");
+    link.download = fileName;
+    link.click();
+  } catch (error) {
+    console.error(error);
+    alert("PNG保存に失敗しました。もう一度お試しください。");
+  } finally {
+    button.textContent = originalText;
+    button.disabled = false;
+  }
+}

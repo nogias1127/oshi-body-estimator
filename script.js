@@ -374,11 +374,20 @@ $("estimateButton").addEventListener("click", estimate);
 $("resetButton").addEventListener("click", resetForm);
 $("copyButton").addEventListener("click", copyResult);
 
+const savePngButton = $("savePngButton");
+if (savePngButton) {
+  savePngButton.addEventListener("click", saveResultAsPng);
+}
 async function saveResultAsPng() {
   const resultSection = $("resultSection");
 
-  if (resultSection.classList.contains("hidden")) {
+  if (!resultSection || resultSection.classList.contains("hidden")) {
     alert("先に「推定する」を押して結果を表示してください。");
+    return;
+  }
+
+  if (typeof html2canvas === "undefined") {
+    alert("画像保存用ライブラリの読み込みに失敗しています。ページを再読み込みしてください。");
     return;
   }
 
@@ -402,13 +411,26 @@ async function saveResultAsPng() {
     const name = ($("oshiName").value.trim() || "あの人").replace(/[\\/:*?"<>|]/g, "_");
     const fileName = `${name}_推定身体情報.png`;
 
-    const link = document.createElement("a");
-    link.href = canvas.toDataURL("image/png");
-    link.download = fileName;
-    link.click();
+    canvas.toBlob((blob) => {
+      if (!blob) {
+        alert("PNG生成に失敗しました。");
+        return;
+      }
+
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+
+      link.href = url;
+      link.download = fileName;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      URL.revokeObjectURL(url);
+    }, "image/png");
   } catch (error) {
     console.error(error);
-    alert("PNG保存に失敗しました。もう一度お試しください。");
+    alert("PNG保存に失敗しました。ブラウザのコンソールをご確認ください。");
   } finally {
     button.textContent = originalText;
     button.disabled = false;

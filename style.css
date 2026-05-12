@@ -311,3 +311,18 @@ td:last-child {
     text-align: left;
   }
 }
+.result-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+@media (max-width: 720px) {
+  .result-actions {
+    width: 100%;
+  }
+
+  .result-actions button {
+    flex: 1 1 auto;
+  }
+}

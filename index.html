@@ -17,13 +17,13 @@
 <details class="about-box">
   <summary>※推定について</summary>
   <p>
-    このツールは、入力された身長を基準に、体格タイプ・頭身・手の印象・脚の長さ印象を加味して、肩幅・胸囲・ウエスト・股下・手足のサイズなどを推定します。
+    このツールは、入力された身長を基準に、身体ベース・体格タイプ・頭身・手の印象・脚の長さ印象を加味して、肩幅・胸囲・ウエスト・股下・手足のサイズなどを推定します。
   </p>
   <p>
-    算出結果は、実在人物の身体計測値や公式設定を再現するものではありません。創作・妄想・サイズ感確認のための目安としてお楽しみください。
+    現在のα版は、主に男性キャラクター向けの推定ロジックです。成人男性寄り・中性的男性・少年寄り男性の身体ベースを選んで、創作や妄想のためのサイズ感を補助することを目的としています。
   </p>
   <p>
-    体格や絵柄、衣装、ポーズによって印象は大きく変わるため、数値は「だいたいこのくらい」として扱ってください。
+    算出結果は、実在人物の身体計測値や公式設定を再現するものではありません。体格や絵柄、衣装、ポーズによって印象は大きく変わるため、数値は「だいたいこのくらい」の目安としてお楽しみください。
   </p>
 </details>
     </div>
@@ -85,7 +85,15 @@
               <span class="field-label">推しの身長（cm）</span>
               <input id="height" type="number" min="100" max="250" step="0.1" placeholder="例：175" />
             </label>
-
+            
+<label class="field">
+  <span class="field-label">身体ベース</span>
+  <select id="frameType">
+    <option value="adultMale" selected>成人男性寄り</option>
+    <option value="neutralMale">中性的男性</option>
+    <option value="boyishMale">少年寄り男性</option>
+  </select>
+</label>
             <label class="field">
               <span class="field-label">体格タイプ</span>
               <select id="bodyType">
@@ -238,7 +246,9 @@
             </div>
 
             <p class="disclaimer">
-              この推定は、創作・妄想・サイズ感確認のための目安です。実在人物や公式設定の正確な身体情報を示すものではありません。
+              <p class="disclaimer">
+  この推定は、主に男性キャラクター向けの創作・妄想・サイズ感確認用の目安です。実在人物や公式設定の正確な身体情報を示すものではありません。
+</p>
             </p>
           </div>
         </section>

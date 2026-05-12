@@ -150,13 +150,23 @@
           <div class="form-grid">
             <label class="field">
               <span class="field-label">あなたの身長（cm）</span>
-              <input id="userHeight" type="number" min="100" max="220" step="0.1" placeholder="例：169" />
+              <input id="userHeight" type="number" min="100" max="220" step="0.1" placeholder="例：158" />
             </label>
 
-            <label class="field">
-              <span class="field-label">あなたの手の長さ（cm）</span>
-              <input id="userHand" type="number" min="10" max="30" step="0.1" placeholder="未入力なら推定" />
-            </label>
+<label class="field">
+  <span class="field-label with-help">
+    あなたの手の長さ（cm）
+
+    <span class="help-tip">
+      <button class="help-button" type="button" aria-label="手の長さの測り方"></button>
+      <span class="help-text" role="tooltip">
+        手首の付け根のシワあたりから、中指の先端までの長さを測って入力してください。
+      </span>
+    </span>
+  </span>
+
+  <input id="userHand" type="number" min="10" max="30" step="0.1" placeholder="未入力でもOK" />
+</label>
 
             <label class="field">
               <span class="field-label">あなたの靴サイズ（cm）</span>
@@ -166,7 +176,6 @@
 
           <div class="button-row action-bar">
             <button id="estimateButton" class="button primary" type="button">
-              <span class="ui-icon ui-icon--spark" aria-hidden="true"></span>
               推定する
             </button>
 

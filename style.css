@@ -846,3 +846,311 @@ td {
     box-shadow: none;
   }
 }
+
+/* =========================
+   v18 visual refinement
+   見た目の主従整理
+========================= */
+
+/* 全体背景を少しだけ上品に */
+body {
+  background:
+    radial-gradient(circle at 12% 0%, rgba(123, 75, 53, 0.13), transparent 30%),
+    radial-gradient(circle at 88% 12%, rgba(63, 95, 111, 0.10), transparent 28%),
+    linear-gradient(180deg, #fbf7f1 0%, #f7f3ee 48%, #f1ebe4 100%);
+}
+
+/* ヘッダーを少し横長・軽めにする */
+.hero {
+  margin-top: 20px;
+  border-color: rgba(200, 184, 170, 0.75);
+  box-shadow: 0 10px 30px rgba(74, 54, 40, 0.07);
+}
+
+.hero-inner {
+  padding: 26px 30px;
+  background:
+    linear-gradient(135deg, rgba(234, 219, 209, 0.68), transparent 48%),
+    linear-gradient(180deg, #ffffff 0%, #fffaf5 100%);
+}
+
+.hero h1 {
+  margin-top: 6px;
+  margin-bottom: 8px;
+  letter-spacing: 0.04em;
+}
+
+.lead {
+  font-size: 15px;
+  line-height: 1.8;
+}
+
+.notice {
+  display: inline-block;
+  margin-top: 14px;
+  padding: 8px 11px;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+/* レイアウトの密度を少し締める */
+.container {
+  padding-top: 20px;
+}
+
+.tool-layout {
+  gap: 18px;
+}
+
+/* 左ガイドは主役ではないので少し控えめに */
+.side-panel {
+  background: rgba(255, 253, 249, 0.78);
+  box-shadow: none;
+  border-color: rgba(222, 210, 198, 0.85);
+}
+
+.side-panel .eyebrow {
+  background: transparent;
+  padding-left: 0;
+  color: var(--text-muted);
+}
+
+.side-panel__header h2 {
+  font-size: 16px;
+}
+
+.step-list {
+  gap: 8px;
+}
+
+.step-list li {
+  padding: 8px;
+  border-radius: var(--radius-sm);
+  background: rgba(255, 255, 255, 0.56);
+  border: 1px solid rgba(222, 210, 198, 0.65);
+}
+
+.step-list__num {
+  width: 26px;
+  height: 26px;
+  font-size: 12px;
+}
+
+.side-note {
+  background: rgba(255, 255, 255, 0.56);
+}
+
+/* メインカードを主役にする */
+.main-panel {
+  gap: 16px;
+}
+
+.panel {
+  border-color: rgba(200, 184, 170, 0.9);
+  box-shadow: 0 12px 30px rgba(74, 54, 40, 0.08);
+}
+
+.input-card {
+  position: relative;
+  overflow: hidden;
+}
+
+.input-card::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: 4px;
+  background: linear-gradient(90deg, var(--primary), var(--secondary));
+  opacity: 0.85;
+}
+
+.card-header {
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--line);
+}
+
+.card-header .eyebrow {
+  margin-bottom: 5px;
+  background: transparent;
+  padding: 0;
+  color: var(--primary);
+}
+
+.card-header h2 {
+  font-size: 20px;
+  letter-spacing: 0.02em;
+}
+
+.card-icon {
+  width: 38px;
+  height: 38px;
+  background: #fff;
+  border: 1px solid var(--line);
+  box-shadow: 0 4px 12px rgba(74, 54, 40, 0.08);
+}
+
+/* 入力欄を少し“入力できる場所”として強くする */
+.form-grid {
+  gap: 13px 14px;
+}
+
+.field {
+  gap: 5px;
+}
+
+.field-label {
+  font-size: 12px;
+  letter-spacing: 0.02em;
+}
+
+input,
+select,
+textarea {
+  background: #fffdf9;
+  border-color: #cbbbad;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8);
+}
+
+input:hover,
+select:hover,
+textarea:hover {
+  border-color: var(--primary);
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  border-color: var(--primary);
+  box-shadow:
+    0 0 0 3px rgba(123, 75, 53, 0.14),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+}
+
+/* ボタンの主従をもっと明確にする */
+.button-row {
+  justify-content: flex-start;
+  padding-top: 4px;
+}
+
+#estimateButton {
+  min-width: 180px;
+  background: linear-gradient(180deg, #87543c 0%, var(--primary) 100%);
+  color: #fff;
+  box-shadow:
+    0 8px 18px rgba(123, 75, 53, 0.24),
+    inset 0 1px 0 rgba(255, 255, 255, 0.18);
+}
+
+#estimateButton:hover {
+  background: linear-gradient(180deg, #74452f 0%, var(--primary-hover) 100%);
+}
+
+#resetButton {
+  background: #fff;
+  color: var(--text-sub);
+  border-color: var(--line-strong);
+  box-shadow: none;
+}
+
+#resetButton:hover {
+  background: var(--surface-soft);
+  color: var(--text-main);
+}
+
+/* 結果エリアは“出力物”として少し特別扱い */
+.result-export-frame {
+  border-color: rgba(123, 75, 53, 0.28);
+  background:
+    linear-gradient(180deg, #ffffff 0%, #fffdf9 58%, #faf4ee 100%);
+  box-shadow: 0 14px 34px rgba(74, 54, 40, 0.10);
+}
+
+.result-header {
+  align-items: center;
+}
+
+.result-header .eyebrow {
+  background: var(--secondary-soft);
+  color: var(--secondary);
+}
+
+.result-header h2 {
+  letter-spacing: 0.03em;
+}
+
+.summary-card {
+  background:
+    linear-gradient(135deg, rgba(234, 219, 209, 0.72), rgba(226, 237, 240, 0.56));
+  border-color: rgba(200, 184, 170, 0.95);
+}
+
+.summary-card p {
+  font-size: 15px;
+  line-height: 1.8;
+}
+
+/* 結果カードの白箱感を軽減 */
+.result-card {
+  border-color: rgba(222, 210, 198, 0.95);
+  background: rgba(255, 255, 255, 0.82);
+}
+
+.result-card__header {
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--line);
+}
+
+.result-card__icon {
+  background: var(--primary-soft);
+  color: var(--primary);
+}
+
+/* 表の読みやすさ */
+table {
+  line-height: 1.6;
+}
+
+th,
+td {
+  padding: 10px 0;
+}
+
+th {
+  color: var(--text-sub);
+  font-size: 13px;
+}
+
+td {
+  font-size: 14px;
+}
+
+/* フッターは薄く */
+.footer {
+  opacity: 0.82;
+}
+
+/* スマホ時の圧迫感を下げる */
+@media (max-width: 700px) {
+  .hero-inner {
+    padding: 20px 18px;
+  }
+
+  .panel,
+  .side-panel,
+  .result-export-frame {
+    padding: 16px;
+  }
+
+  .card-header {
+    gap: 10px;
+  }
+
+  .card-icon {
+    width: 34px;
+    height: 34px;
+  }
+
+  #estimateButton {
+    min-width: 0;
+  }
+}

@@ -59,17 +59,49 @@ const bodyProfiles = {
 };
 
 const handProfiles = {
-  small: { label: "小さめ", factor: 0.96, comment: "手は身長に対して少し控えめで、指先の印象はすっきりしやすいです。" },
-  normal: { label: "標準", factor: 1.0, comment: "手の大きさは身長相応で、自然なサイズ感です。" },
-  large: { label: "大きめ", factor: 1.05, comment: "手を重ねた時に、包まれる印象が出やすい大きさです。" },
-  long: { label: "指が長い", factor: 1.04, comment: "手全体というより、指の長さが印象に残りやすいタイプです。" }
+  small: {
+    label: "小さめ",
+    factor: 0.96,
+    comment: "手は身長に対して少し控えめで、指先の印象はすっきりしやすいです。"
+  },
+  normal: {
+    label: "標準",
+    factor: 1.0,
+    comment: "手の大きさは身長相応で、自然なサイズ感です。"
+  },
+  large: {
+    label: "大きめ",
+    factor: 1.05,
+    comment: "手を重ねた時に、包まれる印象が出やすい大きさです。"
+  },
+  long: {
+    label: "指が長い",
+    factor: 1.04,
+    comment: "手全体というより、指の長さが印象に残りやすいタイプです。"
+  }
 };
 
 const legProfiles = {
-  short: { label: "短め", factor: -0.015, comment: "脚の長さはやや現実寄りで、安定した立ち姿になりやすいです。" },
-  normal: { label: "標準", factor: 0, comment: "身長に対して自然な脚の長さです。" },
-  long: { label: "長め", factor: 0.018, comment: "脚が長めに見え、立ち絵やスーツ姿で映えやすい比率です。" },
-  veryLong: { label: "かなり長め", factor: 0.032, comment: "かなり二次元寄りの脚長体型で、全身シルエットがすらっと見えます。" }
+  short: {
+    label: "短め",
+    factor: -0.015,
+    comment: "脚の長さはやや現実寄りで、安定した立ち姿になりやすいです。"
+  },
+  normal: {
+    label: "標準",
+    factor: 0,
+    comment: "身長に対して自然な脚の長さです。"
+  },
+  long: {
+    label: "長め",
+    factor: 0.018,
+    comment: "脚が長めに見え、立ち絵やスーツ姿で映えやすい比率です。"
+  },
+  veryLong: {
+    label: "かなり長め",
+    factor: 0.032,
+    comment: "かなり二次元寄りの脚長体型で、全身シルエットがすらっと見えます。"
+  }
 };
 
 function round(value, digits = 1) {
@@ -78,6 +110,14 @@ function round(value, digits = 1) {
 
 function rangeText(min, max, unit = "cm") {
   return `${round(min)}〜${round(max)}${unit}`;
+}
+
+function sanitizeFileName(name) {
+  return String(name || "あの人")
+    .trim()
+    .replace(/[\\/:*?"<>|]/g, "_")
+    .replace(/\s+/g, "_")
+    .slice(0, 80) || "あの人";
 }
 
 function estimate() {
@@ -220,9 +260,7 @@ function createMemos(data) {
   const memos = [];
 
   memos.push(`${data.name}の体格は「${data.body.label}」寄り。${data.body.comment}`);
-
   memos.push(`手の印象は「${data.hand.label}」。手長は約${round(data.handLength)}cmで、手を重ねる描写や恋人繋ぎのサイズ感の目安になります。`);
-
   memos.push(`脚の印象は「${data.leg.label}」。股下は約${round(data.inseam)}cmで、立ち姿や歩幅のイメージ作りに使えます。`);
 
   if (data.chest - data.waist > 16) {
@@ -261,13 +299,14 @@ function createCompareMemos(data) {
       memos.push(`身長差は約${round(abs)}cm。あなたの方が少し高く、相手の表情を上から見やすい距離感です。`);
     }
 
-    const hugPosition = estimateHugPosition(diff);
-    memos.push(`ハグ位置の目安：${hugPosition}`);
+    memos.push(`ハグ位置の目安：${estimateHugPosition(diff)}`);
   }
 
   const estimatedUserHand = data.userHand || (data.userHeight ? data.userHeight * 0.108 : null);
+
   if (estimatedUserHand) {
     const handDiff = data.handLength - estimatedUserHand;
+
     if (Math.abs(handDiff) < 0.8) {
       memos.push(`手の長さ差は約${round(Math.abs(handDiff))}cm。手を重ねても差は控えめで、近いサイズ感です。`);
     } else if (handDiff > 0) {
@@ -279,6 +318,7 @@ function createCompareMemos(data) {
 
   if (data.userShoe) {
     const shoeDiff = data.shoeSize - data.userShoe;
+
     if (Math.abs(shoeDiff) < 0.8) {
       memos.push(`靴サイズ差は約${round(Math.abs(shoeDiff))}cm。玄関に並べても近いサイズ感です。`);
     } else if (shoeDiff > 0) {
@@ -308,13 +348,19 @@ function estimateHugPosition(heightDiff) {
 }
 
 function renderTable(target, rows) {
+  if (!target) return;
+
   target.innerHTML = rows
     .map(([label, value]) => `<tr><td>${escapeHtml(label)}</td><td>${escapeHtml(value)}</td></tr>`)
     .join("");
 }
 
 function renderList(target, items) {
-  target.innerHTML = items.map((item) => `<li>${escapeHtml(item)}</li>`).join("");
+  if (!target) return;
+
+  target.innerHTML = items
+    .map((item) => `<li>${escapeHtml(item)}</li>`)
+    .join("");
 }
 
 function buildCopyText(name, basicRows, detailRows, memos, compareMemos) {
@@ -331,21 +377,101 @@ function buildCopyText(name, basicRows, detailRows, memos, compareMemos) {
   return `【${name}の推定身体情報】\n\n${rowsToText("基本寸法", basicRows)}\n\n${rowsToText("手・足・指まわり", detailRows)}\n\n【創作メモ】\n${memoText}${compareText}\n\n※この結果は公式情報ではありません。創作・妄想補助用の推定値です。`;
 }
 
-function copyResult() {
-  const text = $("copyButton").dataset.copyText;
-  if (!text) return;
+async function copyResult() {
+  const copyButton = $("copyButton");
+  const text = copyButton?.dataset.copyText;
 
-  navigator.clipboard.writeText(text).then(
-    () => {
-      $("copyButton").textContent = "コピーしました";
-      setTimeout(() => {
-        $("copyButton").textContent = "結果をコピー";
-      }, 1600);
-    },
-    () => {
-      alert("コピーに失敗しました。ブラウザの設定をご確認ください。");
+  if (!text) {
+    alert("先に「推定する」を押して結果を表示してください。");
+    return;
+  }
+
+  try {
+    await navigator.clipboard.writeText(text);
+    const originalText = copyButton.textContent;
+    copyButton.textContent = "コピーしました";
+
+    setTimeout(() => {
+      copyButton.textContent = originalText;
+    }, 1600);
+  } catch (error) {
+    console.error(error);
+    alert("コピーに失敗しました。ブラウザの設定をご確認ください。");
+  }
+}
+
+async function saveResultAsPng() {
+  const resultSection = $("resultSection");
+  const button = $("savePngButton");
+
+  if (!resultSection || resultSection.classList.contains("hidden")) {
+    alert("先に「推定する」を押して結果を表示してください。");
+    return;
+  }
+
+  if (typeof html2canvas === "undefined") {
+    alert("画像保存用ライブラリの読み込みに失敗しています。ページを再読み込みしてください。");
+    return;
+  }
+
+  if (!button) {
+    alert("PNG保存ボタンが見つかりません。ページを再読み込みしてください。");
+    return;
+  }
+
+  const originalText = button.textContent;
+
+  try {
+    button.textContent = "生成中...";
+    button.disabled = true;
+
+    await new Promise((resolve) => setTimeout(resolve, 80));
+
+    const canvas = await html2canvas(resultSection, {
+      backgroundColor: "#f7f2ee",
+      scale: Math.min(2, window.devicePixelRatio || 1.5),
+      useCORS: true,
+      logging: false,
+      ignoreElements: (element) => element.hasAttribute("data-html2canvas-ignore")
+    });
+
+    const name = sanitizeFileName($("oshiName").value || "あの人");
+    const fileName = `${name}_推定身体情報.png`;
+
+    const blob = await new Promise((resolve) => {
+      canvas.toBlob(resolve, "image/png");
+    });
+
+    if (!blob) {
+      throw new Error("canvas.toBlob returned null");
     }
-  );
+
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+
+    link.href = url;
+    link.download = fileName;
+    link.rel = "noopener";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    setTimeout(() => {
+      URL.revokeObjectURL(url);
+    }, 1000);
+
+    button.textContent = "保存しました";
+
+    setTimeout(() => {
+      button.textContent = originalText;
+    }, 1600);
+  } catch (error) {
+    console.error(error);
+    alert("PNG保存に失敗しました。ブラウザのコンソールをご確認ください。");
+    button.textContent = originalText;
+  } finally {
+    button.disabled = false;
+  }
 }
 
 function resetForm() {
@@ -358,7 +484,9 @@ function resetForm() {
   $("userHeight").value = "";
   $("userHand").value = "";
   $("userShoe").value = "";
+
   $("resultSection").classList.add("hidden");
+  $("copyButton").dataset.copyText = "";
 }
 
 function escapeHtml(value) {
@@ -370,69 +498,29 @@ function escapeHtml(value) {
     .replaceAll("'", "&#039;");
 }
 
-$("estimateButton").addEventListener("click", estimate);
-$("resetButton").addEventListener("click", resetForm);
-$("copyButton").addEventListener("click", copyResult);
+function bindEvents() {
+  const estimateButton = $("estimateButton");
+  const resetButton = $("resetButton");
+  const copyButton = $("copyButton");
+  const savePngButton = $("savePngButton");
 
-const savePngButton = $("savePngButton");
-if (savePngButton) {
-  savePngButton.addEventListener("click", saveResultAsPng);
-}
-async function saveResultAsPng() {
-  const resultSection = $("resultSection");
-
-  if (!resultSection || resultSection.classList.contains("hidden")) {
-    alert("先に「推定する」を押して結果を表示してください。");
-    return;
+  if (estimateButton) {
+    estimateButton.addEventListener("click", estimate);
   }
 
-  if (typeof html2canvas === "undefined") {
-    alert("画像保存用ライブラリの読み込みに失敗しています。ページを再読み込みしてください。");
-    return;
+  if (resetButton) {
+    resetButton.addEventListener("click", resetForm);
   }
 
-  const button = $("savePngButton");
-  const originalText = button.textContent;
+  if (copyButton) {
+    copyButton.addEventListener("click", copyResult);
+  }
 
-  try {
-    button.textContent = "生成中...";
-    button.disabled = true;
-
-    const canvas = await html2canvas(resultSection, {
-      backgroundColor: "#f7f2ee",
-      scale: 2,
-      useCORS: true,
-      logging: false,
-      ignoreElements: (element) => {
-        return element.hasAttribute("data-html2canvas-ignore");
-      }
-    });
-
-    const name = ($("oshiName").value.trim() || "あの人").replace(/[\\/:*?"<>|]/g, "_");
-    const fileName = `${name}_推定身体情報.png`;
-
-    canvas.toBlob((blob) => {
-      if (!blob) {
-        alert("PNG生成に失敗しました。");
-        return;
-      }
-
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement("a");
-
-      link.href = url;
-      link.download = fileName;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-
-      URL.revokeObjectURL(url);
-    }, "image/png");
-  } catch (error) {
-    console.error(error);
-    alert("PNG保存に失敗しました。ブラウザのコンソールをご確認ください。");
-  } finally {
-    button.textContent = originalText;
-    button.disabled = false;
+  if (savePngButton) {
+    savePngButton.addEventListener("click", saveResultAsPng);
+  } else {
+    console.warn("savePngButton が見つかりません。index.html のボタンIDを確認してください。");
   }
 }
+
+document.addEventListener("DOMContentLoaded", bindEvents);
